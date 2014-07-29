@@ -23,7 +23,7 @@ When you call this function a message will appear on your console saying *timer 
 Another options
 ---------------
 
-Passing options to a **Chronos** instance is not an obligation but it's a good practice to be sure what you are measuring. It's weird to count execution time in minutes or hours, but if it is your case (I hope not) you can do this...
+Passing options to a **Chronos** instance, like **label** for example, is not an obligation but it's a good practice to be sure what you are measuring. It's weird to count execution time in minutes or hours, but if it is your case (I hope not) you can do this...
 
 ```js
 timer.init({ 
