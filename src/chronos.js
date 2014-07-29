@@ -7,12 +7,16 @@
             },
             minutes: {
                 factor: 60000,
-                label: 'min',
-                include: true
+                label: 'min'
             },
             seconds: {
                 factor: 1000,
                 label: 's',
+                include: true
+            },
+            milliseconds: {
+                factor: 1,
+                label: 'ms',
                 include: true
             }
         };
@@ -20,11 +24,52 @@
 
     Chronos.prototype.init = function(opt){
         var options = opt || {};
-        this.initDate = new Date(),
+        // set initial properties
+        this.initDate = new Date();
         this.label = options.label || 'Chronos new instance';
         this.units.hours.include = options.showHours || false;
+        this.units.minutes.include = options.showMinutes || false;
+        this.checkpoints = [];
 
-        console.log(this.label + ' initialized');
+        // sets initial time as first checkpoint
+        this.checkpoints[0] = {
+            label: 'initialized',
+            time: {
+                date: this.initDate,
+                obj: this._timeToObject(this.initDate)
+            },
+            lapse: this._timeToObject(this.initDate)
+        };
+
+        // save init data in variable
+        this.initCheckpoint = this.checkpoints[0];
+
+        // print init message
+        console.info(this._print());
+    };
+
+    Chronos.prototype._timeToObject = function(date){
+        return {
+            hours: date.getHours(),
+            minutes: date.getMinutes(),
+            seconds: date.getSeconds(),
+            milliseconds: date.getMilliseconds()
+        };
+    };
+
+    Chronos.prototype._objectToString = function(obj){
+        var str = '';
+
+        for(var key in obj){
+            if(this.units[key].include){
+                str += obj[key] + this.units[key].label;
+                if (key !== 'milliseconds'){
+                    str += ' ';
+                }
+            }
+        };
+
+        return str;
     };
 
     Chronos.prototype._calculateCheckpoint = function(diff){
@@ -38,37 +83,77 @@
             }
         };
 
-        t.milliseconds = diff;
-
         return t;
-    }
+    };
+
+    Chronos.prototype._print = function(checkpoint){
+        var instance = this,
+            checkpoint = checkpoint || instance.checkpoints[instance.checkpoints.length - 1],
+            mainLabel = instance.label,
+            checkpointLabel = checkpoint.label,
+            lapseObj = checkpoint.lapse,
+            intvObj = checkpoint.interval,
+            timeMessage;
+
+        if(intvObj){
+            timeMessage = ' // lapse: ' + instance._objectToString(lapseObj) + 
+                ' // interval: ' + instance._objectToString(intvObj);
+        } else {
+            timeMessage = '';
+        }
+
+        return mainLabel + ' ' +
+            checkpointLabel +
+            timeMessage;
+    };
 
     Chronos.prototype.checkpoint = function(checkpointLabel){
         var now = new Date(),
             diff = now.getTime() - this.initDate.getTime(),
             checkpointLabel = checkpointLabel || 'checkpoint',
-            msg = this.label + ' ' + checkpointLabel + ': ',
-            t;
+            prevCheckpoint = this.checkpoints[this.checkpoints.length - 1],
+            t,
+            intv;
 
         t = this._calculateCheckpoint(diff);
+        intv = this._calculateCheckpoint(now.getTime() - prevCheckpoint.time.date.getTime());
 
-        for(var key in this.units){
-            if(this.units[key].include){
-                msg += t[key] + this.units[key].label + ' ';
-            }
+        this.checkpoints.push({
+            label: checkpointLabel,
+            time: {
+                date: now,
+                obj: this._timeToObject(now),
+            },
+            lapse: t,
+            interval: intv
+        });
+
+        // print last checkpoint
+        console.log(this._print());
+    };
+
+    Chronos.prototype.report = function(reportLabel){
+        var checkpoints = this.checkpoints,
+            now = this._objectToString(this._timeToObject(new Date())),
+            reportHeader = '',
+            reportMessage = '';
+
+        if(reportLabel){
+            reportHeader = this.label + ' ' + reportLabel + ' report:';
+        } else {
+            reportHeader = this.label + ' report:';
         };
 
-        msg += t.milliseconds + 'ms';
+        reportMessage = reportHeader + '\n';
 
-        console.log(msg);
-    };
+        for(var i = 0, len = checkpoints.length; i < len; i++){
+            reportMessage += ' - ' + this._print(checkpoints[i]) + '\n';
+        };
+
+        // print report
+        console.info(reportMessage);
+    }
     
     root.Chronos = Chronos;
 
 })(this, undefined);
-
-
-// test
-var timer = new Chronos();
-timer.init({ label: 'timer', showHours: true });
-timer.checkpoint('quick check');
