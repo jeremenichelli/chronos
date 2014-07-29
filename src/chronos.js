@@ -72,7 +72,7 @@
         return str;
     };
 
-    Chronos.prototype._calculateCheckpoint = function(diff){
+    Chronos.prototype._calculateDiff = function(diff){
         var t = {};
 
         for(var key in this.units){
@@ -115,8 +115,8 @@
             t,
             intv;
 
-        t = this._calculateCheckpoint(diff);
-        intv = this._calculateCheckpoint(now.getTime() - prevCheckpoint.time.date.getTime());
+        t = this._calculateDiff(diff);
+        intv = this._calculateDiff(now.getTime() - prevCheckpoint.time.date.getTime());
 
         this.checkpoints.push({
             label: checkpointLabel,
