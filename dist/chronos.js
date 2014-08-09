@@ -5,7 +5,7 @@
 
     Chronos.prototype.units = {
         hours: {
-            factor: 3600000000,
+            factor: 3600000,
             label: 'h'
         },
         minutes: {

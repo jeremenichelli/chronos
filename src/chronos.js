@@ -3,35 +3,35 @@
 
     var Chronos = function(){};
 
-    Chronos.prototype.units = {
-        hours: {
-            factor: 3600000000,
-            label: 'h'
-        },
-        minutes: {
-            factor: 60000,
-            label: 'min'
-        },
-        seconds: {
-            factor: 1000,
-            label: 's',
-            include: true
-        },
-        milliseconds: {
-            factor: 1,
-            label: 'ms',
-            include: true
-        }
-    };
-
     Chronos.prototype.init = function(opt){
         var options = opt || {};
         // set initial properties
         this.initDate = new Date();
         this.label = options.label || 'Chronos new instance';
-        this.units.hours.include = options.showHours || false;
-        this.units.minutes.include = options.showMinutes || false;
         this.checkpoints = [];
+
+        this.units = {
+            hours: {
+                factor: 3600000,
+                label: 'h',
+                include: options.showHours || false
+            },
+            minutes: {
+                factor: 60000,
+                label: 'min',
+                include: options.showMinutes || false
+            },
+            seconds: {
+                factor: 1000,
+                label: 's',
+                include: true
+            },
+            milliseconds: {
+                factor: 1,
+                label: 'ms',
+                include: true
+            }
+        };
 
         // sets initial time as first checkpoint
         this.checkpoints[0] = {

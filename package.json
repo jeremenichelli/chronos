@@ -16,6 +16,7 @@
     "gulp-karma": "0.0.4",
     "karma-jasmine": "^0.1.5",
     "karma-spec-reporter": "0.0.13",
-    "karma-phantomjs-launcher": "^0.1.4"
+    "karma-phantomjs-launcher": "^0.1.4",
+    "gulp-plumber": "^0.6.4"
   }
 }
